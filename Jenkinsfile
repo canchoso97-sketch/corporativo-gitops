@@ -5,7 +5,7 @@ pipeline {
         stage('1. Auditoria de Codigo (Linting)') {
             steps {
                 echo 'Validando sintaxis de Terraform y Ansible...'
-                dir('terraform') { sh 'terraform validate' }
+                dir('terraform') { sh 'rm -rf .terraform'    sh 'terraform init -input=false -reconfigure'    sh 'terraform validate' }
                 dir('ansible') { sh 'ansible-playbook --syntax-check playbook.yml' }
             }
         }
@@ -13,8 +13,7 @@ pipeline {
         stage('2. Planificacion (Terraform Plan) ') {
             steps {
                 dir('terraform') {
-                    sh 'terraform init'
-                    sh 'terraform plan'
+                    sh 'terraform plan -out=tfplan'
                 }
             }
         }
@@ -27,7 +26,7 @@ pipeline {
 
         stage('4. Aprovisionamiento (Terraform Apply)') {
             steps {
-                dir('terraform') { sh 'terraform apply -auto-approve' }
+                dir('terraform') { sh 'terraform apply -auto-approve tfplan' }
             }
         }
 

@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'wsl' }
 
     stages {
         stage('1. Auditoria de Codigo (Linting)') {
